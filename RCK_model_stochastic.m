@@ -79,48 +79,6 @@ iGR = yGR - cGR;
 
 fprintf("Golden rule values: kSS=%f; cSS=%f; iSS=%f;\n\n", kGR, cGR, iGR);
 
-% SS for stoch. Ramsey starting from determ. Ramsey
-% metric=1; i=0; kSS=1; Vars = [kSS; eSS];
-% while 1
-%     i = i+1;
-% 
-%     kSS = Vars(1);
-%     eSS = Vars(2);
-% 
-%     % Merit function
-%     err = [(f_p1(kSS)-delta - rho - theta*g) + ...
-%                sigma^2/2*(theta^2*(eSS-1)^2 + theta*eSS^2);
-%            eSS - (f_p1(kSS) - (delta+n+g - sigma^2/2))*kSS / (f(kSS) - (delta+n+g - sigma^2/2)*kSS)];
-% 
-%     % Loop break
-%     metric = max(abs(err));
-%     %fprintf("Iteration = %d; max error = %f;\n", i, metric);
-%     if (metric <= eps || i >= 1e2)
-%         %fprintf("Finished!\n\n"); break;
-%         break;
-%     end
-% 
-%     % Jacobian
-%     J = [f_p2(kSS), sigma^2*(theta^2*(eSS-1) + theta*eSS);
-%          0, 1];
-% 
-%     % Iteration step
-%     Vars = Vars - J\err;
-%     metric = abs(max(err));
-% end
-% ySS = f(kSS);
-% cSS = ySS - (delta+n+g - sigma^2/2)*kSS;
-% iSS = ySS - cSS;
-
-% if (metric <= eps^0.5)
-%     fprintf("Mean stochastic values: kSS=%f; cSS=%f; eSS=%f;\n\n", kSS, cSS, eSS);
-% else
-%     fprintf("Steady state solver failed to converge in %d iterations!\n\n", i);
-%     return;
-% end
-
-fprintf("\n");
-
 %% Grids, differentiation operators
 Ik = 2000; kmin = 1e-3*kSS; kmax = 4*kSS;
 k = linspace(kmin, kmax, Ik)';
@@ -211,7 +169,7 @@ Ek = k'*(fk.*gradient(k)); % mean
 SDk = (k.^2'*(fk.*gradient(k)) - Ek^2)^0.5; % std deviation
 k_zoomed = linspace(max(Ek-4*SDk, k(1)), Ek+4*SDk, 400); % k zoomed in
 
-figure; 
+figure;
 tiledlayout(2, 2, "Padding", "tight", "TileSpacing", "tight");
 
 nexttile; hold on;
@@ -298,7 +256,7 @@ fprintf("\n");
 clear k_zoomed y_zoomed c_zoomed iZ;
 
 %% Time path diagrams
-tmax = 100; t = (0:1e-2:tmax)'; N = 1000;
+tmax = 1000; t = (0:1e-2:tmax)'; N = 10;
 tmin = -floor(tmax/5);
 dt = t(2)-t(1);
 
@@ -322,10 +280,15 @@ yt = f(kt);
 ct = makima(k, cp, kt);
 it = makima(k, ip, kt);
 
-figure; hold on; histogram(kt, "Normalization", "pdf");
+figure;
+hold on; histogram(kt, "Normalization", "pdf");
 plot(k, fk, "linewidth", 2);
+hold off;
 
-figure; subplot(2, 3, 1); hold on;
+figure;
+tiledlayout(2, 3, "Padding", "tight", "TileSpacing", "tight");
+
+nexttile; hold on;
 plot(t, kt, "linewidth", 0.8, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
 
@@ -334,7 +297,7 @@ ylabel("$\tilde{k}\!\left(t\right)$", "interpreter", "latex");
 title("Capital path(s)~$\tilde{k}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 2); hold on;
+nexttile; hold on;
 plot(t, yt, "linewidth", 0.8, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
 
@@ -343,7 +306,7 @@ ylabel("$\tilde{y}\!\left(t\right)$", "interpreter", "latex");
 title("Output path(s)~$\tilde{y}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 3); hold on;
+nexttile; hold on;
 plot(t, ct, "linewidth", 0.8, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
 
@@ -352,7 +315,7 @@ ylabel("$\tilde{c}\!\left(t\right)$", "interpreter", "latex");
 title("Consumption path(s)~$\tilde{c}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 4); hold on;
+nexttile; hold on;
 plot(t, it, "linewidth", 0.8, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
 
@@ -361,7 +324,7 @@ ylabel("$\tilde{i}\!\left(t\right)$", "interpreter", "latex");
 title("Investment path(s)~$\tilde{i}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 5); hold on;
+nexttile; hold on;
 plot(t, sigma*Bt, "linewidth", 0.8, "color", [0.4 0 1]);
 xlim([0 tmax]); hold off;
 
@@ -370,7 +333,7 @@ ylabel("$\sigma \tilde{B}\!\left(t\right)$", "interpreter", "latex");
 title("Shock path~$\sigma \tilde{B}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 6); hold on;
+nexttile; hold on;
 plot(t, At, "linewidth", 0.8, "color", [0.4 0 1]);
 plot(t, exp((g+sigma^2/2)*t), "--", "linewidth", 1.2, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
@@ -381,7 +344,10 @@ title("Productivity path~$A\!\left(t\right)$", ...
     "interpreter", "latex", "fontsize", 12);
 
 %% Detrended paths
-figure; subplot(2, 3, 1); hold on;
+figure;
+tiledlayout(2, 3, "Padding", "tight", "TileSpacing", "tight");
+
+nexttile; hold on;
 plot(t, log(kt.*exp(sigma*Bt)./mean(kt.*exp(sigma*Bt))), "linewidth", 0.8, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
 
@@ -390,7 +356,7 @@ ylabel("$\tilde{k}\!\left(t\right)$", "interpreter", "latex");
 title("Capital path(s)~$\tilde{k}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 2); hold on;
+nexttile; hold on;
 plot(t, log(yt.*exp(sigma*Bt)./mean(yt.*exp(sigma*Bt))), "linewidth", 0.8, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
 
@@ -399,7 +365,7 @@ ylabel("$\tilde{y}\!\left(t\right)$", "interpreter", "latex");
 title("Output path(s)~$\tilde{y}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 3); hold on;
+nexttile; hold on;
 plot(t, log(ct.*exp(sigma*Bt)./mean(ct.*exp(sigma*Bt))), "linewidth", 0.8, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
 
@@ -408,7 +374,7 @@ ylabel("$\tilde{c}\!\left(t\right)$", "interpreter", "latex");
 title("Consumption path(s)~$\tilde{c}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 4); hold on;
+nexttile; hold on;
 plot(t, log(it.*exp(sigma*Bt)./mean(it.*exp(sigma*Bt))), "linewidth", 0.8, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
 
@@ -417,23 +383,23 @@ ylabel("$\tilde{i}\!\left(t\right)$", "interpreter", "latex");
 title("Investment path(s)~$\tilde{k}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 5); hold on;
+nexttile; hold on;
 plot(t, sigma*Bt, "linewidth", 0.8, "color", [0.4 0 1]);
 xlim([0 tmax]); hold off;
 
 xlabel("$t$", "interpreter", "latex");
 ylabel("$\sigma \tilde{B}\!\left(t\right)$", "interpreter", "latex");
-title("Shock path~$\sigma \tilde{B}\!\left(t\right)$", ...
+title("Shock path(s)~$\sigma \tilde{B}\!\left(t\right)$", ...
       "interpreter", "latex", "fontsize", 12);
 
-subplot(2, 3, 6); hold on;
+nexttile; hold on;
 plot(t, At, "linewidth", 0.8, "color", [0.4 0 1]);
 plot(t, exp((g+sigma^2/2)*t), "--", "linewidth", 1.2, "color", [1 0.3 0]);
 xlim([0 tmax]); hold off;
 
 xlabel("$t$", "interpreter", "latex");
 ylabel("$A\!\left(t\right)$", "interpreter", "latex");
-title("Productivity path~$A\!\left(t\right)$", ...
+title("Productivity path(s)~$A\!\left(t\right)$", ...
     "interpreter", "latex", "fontsize", 12);
 
 %% Simple sparse diagonalisation
