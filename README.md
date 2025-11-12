@@ -1,2 +1,2 @@
-# Ramsey-Cass-Koopmans-solver
-MATLAB routines for deriving the numerical solutions for the deterministic and stochastic versions of the Ramsey-Cass-Koopmans model in continuous time.  I use the output of the deterministic version in classroom to give a feel of how the model works and to demystify the notion of the saddle path and make it more tangible -- even if not solved for analytically.
+# Solver for the Ramsey-Cass-Koopmans model in continuous time
+MATLAB routines for deriving the numerical solutions for the deterministic and stochastic versions of the celebrated Ramsey-Cass-Koopmans model in continuous time.  I use the output of the deterministic version in classroom to give students a feel of how solving the model works, as well as to demystify the notion of the saddle path and make it more tangible -- even if not solved for analytically (and perhaps to peek their interest in numerical methods in macroeconomics).
